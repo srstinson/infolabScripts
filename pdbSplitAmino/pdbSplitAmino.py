@@ -12,20 +12,24 @@ from collections import deque
 AMINO_ACID_BEGIN = 17
 AMINO_ACID_END = 20
 
+#Returns a generator containing all of the lines beginning with ATOM
+#corresponding to the next amino acid in the pdbLines list of strings.
+#Side Effect: all of the lines returned and those skipped are popped off
+#of pdbLibes
 def getAcid(pdbLines):
     acid = ""
-    while(len(pdbLines)>0):
+    currentAcid = ""
+    while(len(pdbLines)>0 and currentAcid==acid):
         line = pdbLines.popleft().strip()
         if (line.startswith("ATOM ")):
             currentAcid = line[AMINO_ACID_BEGIN:AMINO_ACID_END]
             if (acid==""):
                 acid = currentAcid
-            elif(currentAcid!=acid):
-		pdbLines.appendleft(line)
-                break
             #print line
             yield line+"\n"
 
+#Writes acidLines to a filename generated in the way usage() describes in the directory
+#provided
 def outputAcidFile(dir,id,acidLines):
     firstLine = acidLines.__iter__().next()
     outputFileName = os.path.join(dir,id+firstLine[AMINO_ACID_BEGIN:AMINO_ACID_END]+firstLine[23:26].strip())
@@ -34,6 +38,8 @@ def outputAcidFile(dir,id,acidLines):
     outFile.write(firstLine)
     outFile.writelines(acidLines)
 
+#Main method. opens the pdb file, adds the pdb lines to a queue, then
+#breaks off each amino acid in order then writes them to a file.
 def main():
     if len(sys.argv) != 2:
 	usage()
@@ -49,6 +55,7 @@ def main():
         acidLines = getAcid(pdbLines)
         outputAcidFile(dir,id,acidLines)
 
+#Prints the usage of the script when it is not invoked correctly.
 def usage():
 	print "USAGE:"
 	print "--------------------------------------------------"
