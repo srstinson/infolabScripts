@@ -211,21 +211,21 @@ def getLists(filename):
 			if line[2] == '=':
 				var = []
 				if line[3:].strip().startswith('['):
-					startIndex = string.find(line, '[')
-					commaIndex = string.find(line, ',')
-					if commaIndex == -1:
-						commaIndex = string.find(line, ']')
-					while commaIndex!=-1:
-						var.append(line[startIndex+1:commaIndex].strip())
-						startIndex = commaIndex+1
-						commaIndex = string.find(line, ',', startIndex)
-						if commaIndex == -1:
-							commaIndex = string.find(line, ']', startIndex)
+					startIndex = string.find(line, '[')+1
+					endIndex = string.find(line, ']')
+					var.extend(string.split(line[startIndex:endIndex],','))
+					#if endIndex == -1:
+					#	endIndex = string.find(line, ']')
+					#while endIndex!=-1:
+					#	var.append(line[startIndex+1:endIndex].strip())
+					#	startIndex = endIndex+1
+					#	endIndex = string.find(line, ',', startIndex)
+					#	if endIndex == -1:
+					#		endIndex = string.find(line, ']', startIndex)
 				elif line[3:].strip().startswith('-d'):
 					switchIndex = string.find(line, 'd')
 					dir = line[switchIndex+1:].strip()
-					for item in glob.glob(os.path.join(dir,"*.SURF")):
-						var.append(item)
+					vard.extend(glob.glob(os.path.join(dir,"*.SURF")))
 				else:
 					var.append(line[4:].strip())
 				
